@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Restaurant {
+  id       Int       @id @unique(map: "id") @default(autoincrement())
+  name     String    @db.VarChar(255)
+  email    String    @unique(map: "email") @db.VarChar(255)
+  password String    @db.VarChar(255)
+  pedidos  pedidos[]
+}
+
+model Users {
+  id       Int       @id @unique(map: "id") @default(autoincrement())
+  name     String    @db.VarChar(255)
+  email    String    @unique(map: "email") @db.VarChar(255)
+  password String    @db.VarChar(255)
+  pedidos  pedidos[]
+}
+
+model pedidos {
+  id            Int        @id @default(autoincrement())
+  ClienteId     Int
+  RestauranteId Int
+  status_pedido String     @db.VarChar(50)
+  pagamento     String     @db.VarChar(100)
+  itens         String?    @db.VarChar(250)
+  Users         Users      @relation(fields: [ClienteId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pedidos_ibfk_1")
+  Restaurant    Restaurant @relation(fields: [RestauranteId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pedidos_ibfk_2")
+
+  @@index([ClienteId], map: "ClienteId")
+  @@index([RestauranteId], map: "RestauranteId")
+}
+
+model Dishes {
+  id       Int    @id @unique(map: "id") @default(autoincrement())
+  name     String @db.VarChar(255)
+  price    Float  @db.Float
+  category String @db.VarChar(255)
+}
